@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,17 +17,20 @@ namespace ToDoListAPI.Services
         {
             _context = context;
         }
-        public async Task<List<Models.Task>> GetAll()
+        public async Task<List<TaskDTO>> GetAllTask()
         {
-            return await _context.Tasks.ToListAsync();
+            //return await _context.Tasks.ToListAsync();
+            return await _context.Tasks
+                .Select(x => taskDTO(x))
+                .ToListAsync();
         }
-        public async Task<List<Models.Task>> GetByStatus(bool status)
+        public async Task<List<TaskDTO>> GetByStatus(bool status)
         {
-            return await _context.Tasks.Where(x => x.Status == status).ToListAsync();
+            return await _context.Tasks.Where(x => x.Status == status).Select(x => taskDTO(x)).ToListAsync();
         }
-        public async Task<List<Models.Task>> GetByDate(DateTime date)
+        public async Task<List<TaskDTO>> GetByDate(DateTime date)
         {
-            return await _context.Tasks.Where(x => x.CreateAt == date).ToListAsync();
+            return await _context.Tasks.Where(x => x.CreateAt == date).Select(x => taskDTO(x)).ToListAsync();
         }
         public async Task<string> CompleteTasks(List<int> listIdTask)
         {
@@ -108,5 +112,14 @@ namespace ToDoListAPI.Services
         {
             return _context.Tasks.Any(e => e.Id == id);
         }
+        private static TaskDTO taskDTO(Models.Task task) =>
+           new TaskDTO
+           {
+               Name = task.Name,
+               Description = task.Description,
+               Status = task.Status,
+               ExecAt = task.ExecAt,
+               CreateAt = task.CreateAt
+           };
     }
 }

@@ -12,7 +12,6 @@ namespace ToDoListAPI.IService
         Task<List<User>> GetAll();
         Task<string> CreateUser(User user);
         Task<string> Login(string username, string pass);
-
         string VerifyToken(string token);
     }
 }

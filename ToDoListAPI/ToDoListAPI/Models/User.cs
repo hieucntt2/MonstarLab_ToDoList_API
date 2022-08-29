@@ -16,7 +16,7 @@ namespace ToDoListAPI.Models
         public string UserName { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }
-
+        public ICollection<Task> Tasks { get; set; }
         public void ConvertFormUserDTO(UserDTO input)
         {
             this.FullName = input.FullName;
@@ -24,6 +24,9 @@ namespace ToDoListAPI.Models
             this.Password = input.Password;
             this.Email = input.Email;
         }
-
+        internal void ConvertFormTaskDTO(TaskDTO taskDTO)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

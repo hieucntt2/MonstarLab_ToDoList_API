@@ -13,17 +13,26 @@ namespace ToDoListAPI.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        [Display(Name = "Tên công việc")]
         public string Name { get; set; }
         [StringLength(1000)]
-        [Display(Name = "Mô tả công việc")]
         public string Description { get; set; }
-        [Display(Name = "Trạng thái ")]
         public bool Status { get; set; }
-        [Display(Name = "Ngày hoàn thành")]
         public DateTime ExecAt { get; set; }
-        [Display(Name = "Ngày bắt đầu")]
         public DateTime CreateAt { get; set; }
+        public int UserId { get; set; }
+        [ForeignKey("UserId")]
+        public User User { get; set; }
+        public int CateId { get; set; }
+        [ForeignKey("CateId")]
+        public TaskCategory Category { get; set; }
 
+        public void ConvertFormTaskDTO(TaskDTO task)
+        {
+            this.Name = task.Name;
+            this.Description = task.Description;
+            this.Status = task.Status;
+            this.ExecAt = task.ExecAt;
+            this.CreateAt = task.CreateAt;
+        }
     }
 }

@@ -18,7 +18,7 @@ namespace ToDoListAPI.Controllers
         {
             this.userService = userService;
         }
-        [HttpGet("GetAll")]
+        [HttpGet("/GetAllUser")]
         public async Task<IActionResult> GetAll(string token)
         {
             //Kiểm tra token 
@@ -35,7 +35,7 @@ namespace ToDoListAPI.Controllers
             
         }
 
-        [HttpPost("Create-Account")]
+        [HttpPost("/Create-Account")]
         public async Task<IActionResult> CreateUser(UserDTO userDTO)
         {
             var user = new User();
@@ -53,7 +53,7 @@ namespace ToDoListAPI.Controllers
             }
         }
 
-        [HttpGet("Login")]
+        [HttpGet("/Login")]
         public async Task<IActionResult> Login(string username, string pass)
         {
             var resService = await userService.Login(username, pass);

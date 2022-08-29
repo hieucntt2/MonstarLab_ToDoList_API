@@ -26,6 +26,9 @@ namespace ToDoListAPI.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("CateId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreateAt")
                         .HasColumnType("datetime2");
 
@@ -43,9 +46,31 @@ namespace ToDoListAPI.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("CateId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("Task");
+                });
+
+            modelBuilder.Entity("ToDoListAPI.Models.TaskCategory", b =>
+                {
+                    b.Property<int>("CateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CateName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CateId");
+
+                    b.ToTable("TaskCategory");
                 });
 
             modelBuilder.Entity("ToDoListAPI.Models.User", b =>
@@ -70,6 +95,35 @@ namespace ToDoListAPI.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("ToDoListAPI.Models.Task", b =>
+                {
+                    b.HasOne("ToDoListAPI.Models.TaskCategory", "Category")
+                        .WithMany("Tasks")
+                        .HasForeignKey("CateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ToDoListAPI.Models.User", "User")
+                        .WithMany("Tasks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ToDoListAPI.Models.TaskCategory", b =>
+                {
+                    b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("ToDoListAPI.Models.User", b =>
+                {
+                    b.Navigation("Tasks");
                 });
 #pragma warning restore 612, 618
         }
