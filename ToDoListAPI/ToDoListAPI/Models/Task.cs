@@ -33,6 +33,8 @@ namespace ToDoListAPI.Models
             this.Status = task.Status;
             this.ExecAt = task.ExecAt;
             this.CreateAt = task.CreateAt;
+            this.UserId = task.UserId;
+            this.CateId = task.CateId;
         }
     }
 }

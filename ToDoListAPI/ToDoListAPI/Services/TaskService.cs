@@ -17,10 +17,11 @@ namespace ToDoListAPI.Services
         {
             _context = context;
         }
-        public async Task<List<TaskDTO>> GetAllTask()
+        public async Task<List<TaskDTO>> GetAllTask(int userId)
         {
             //return await _context.Tasks.ToListAsync();
             return await _context.Tasks
+                .Where(x => x.UserId == userId)
                 .Select(x => taskDTO(x))
                 .ToListAsync();
         }
@@ -36,9 +37,12 @@ namespace ToDoListAPI.Services
         {
             //Duyệt listIDTask và lấy ra Task tương ứng
             int failId = 0; //Đếm số lần ID ko thoả mãn
+                var Task = await _context.Tasks.Where(x => listIdTask.Contains(x.Id)).ToListAsync();
+
             foreach (var idTask in listIdTask)
             {
-                var Task = await _context.Tasks.FirstOrDefaultAsync(x => x.Id == idTask);
+
+
                 //Kiểm tra Id có hợp lệ
                 if (Task != null)
                 {
@@ -61,27 +65,23 @@ namespace ToDoListAPI.Services
             }
 
         }
-        public async Task<string> CreateTask(Models.Task task)
+        public async Task<Models.Task> CreateTask(Models.Task task)
         {
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
 
-            return "00";
+            return task;
         }
         public async Task<string> DeleteTask(int Id)
         {
             var task = await _context.Tasks.FindAsync(Id);
-            if (task == null)
-            {
-                return "01";
-            }
-            else
+            if (task != null)
             {
                 _context.Tasks.Remove(task);
                 await _context.SaveChangesAsync();
             }
-
-            return "00";
+           
+            return null;
         }
         public async Task<string> UpdateTask(int Id, Models.Task task)
         {
@@ -119,7 +119,9 @@ namespace ToDoListAPI.Services
                Description = task.Description,
                Status = task.Status,
                ExecAt = task.ExecAt,
-               CreateAt = task.CreateAt
+               CreateAt = task.CreateAt,
+               UserId = task.UserId,
+               CateId = task.CateId
            };
     }
 }

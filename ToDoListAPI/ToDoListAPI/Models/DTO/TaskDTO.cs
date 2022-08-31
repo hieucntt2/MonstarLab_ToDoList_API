@@ -15,7 +15,9 @@ namespace ToDoListAPI.Models
         public bool Status { get; set; }
         public DateTime ExecAt { get; set; }
         public DateTime CreateAt { get; set; }
+        public int UserId { get; set; }
+        public int CateId { get; set; }
 
-        
+
     }
 }

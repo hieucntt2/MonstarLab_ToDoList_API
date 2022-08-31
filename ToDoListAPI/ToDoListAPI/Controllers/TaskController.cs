@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,6 +11,7 @@ using ToDoListAPI.Services;
 
 namespace ToDoListAPI.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TaskController : ControllerBase
@@ -23,9 +25,9 @@ namespace ToDoListAPI.Controllers
         }
 
         [HttpGet("/GetAllTask")]
-        public async Task<IActionResult> GetAllTask()
+        public async Task<IActionResult> GetAllTask(int userId)
         {
-            var listTask = await taskService.GetAllTask();
+            var listTask = await taskService.GetAllTask(userId);
             return Ok(listTask);
         }
         [HttpGet("/Get-by-status")]
@@ -49,10 +51,7 @@ namespace ToDoListAPI.Controllers
             {
                 return NotFound(new { Mess = "Invalid ID" });
             }
-            else
-            {
-                return Ok(new { Mess = "Successful" });
-            }
+            return Ok(new { Mess = "Successful" });
         }
         [HttpPost("/Create-Task")]
         public async Task<IActionResult> CreateTask(TaskDTO taskDTO)
@@ -61,29 +60,22 @@ namespace ToDoListAPI.Controllers
             //Chuyen dto sang user
             task.ConvertFormTaskDTO(taskDTO);
             var resService = await taskService.CreateTask(task);
-            if (resService == "00")
+            if (resService != null)
             {
-                return Ok(new { Mess = "Create Success" });
+                return Ok(new { Mess = "Create Success", resService });
             }
-            else
-            {
-                return NotFound(new { Mess = "Unsuccessful" });
-            }
-
+            return NotFound(new { Mess = "Unsuccessful" });
         }
 
         [HttpDelete("/Delete-Tasks")]
         public async Task<IActionResult> DeleteTask(int id)
         {
             var resService = await taskService.DeleteTask(id);
-            if (resService == "01")
+            if (resService == null)
             {
                 return NotFound(new { Mess = "Delete Failed" });
             }
-            else
-            {
-                return Ok(new { Mess = "Delete Success" });
-            }
+            return Ok(new { Mess = "Delete Success" });
         }
         [HttpPut("/Update-Task")]
         public async Task<IActionResult> UpdateTask(int id, Models.Task task)
@@ -93,10 +85,7 @@ namespace ToDoListAPI.Controllers
             {
                 return NotFound(new { Mess = "Update success" });
             }
-            else
-            {
-                return Ok(new { Mess = "Successful" });
-            }
+            return Ok(new { Mess = "Successful" });
         }
     }
 }
