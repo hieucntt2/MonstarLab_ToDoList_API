@@ -17,9 +17,9 @@ namespace ToDoListAPI.Controllers
     public class TaskController : ControllerBase
 
     {
-        private ITaskService taskService;
+        private ITaskServices taskService;
 
-        public TaskController(ITaskService taskService)
+        public TaskController(ITaskServices taskService)
         {
             this.taskService = taskService;
         }
@@ -47,11 +47,12 @@ namespace ToDoListAPI.Controllers
         public async Task<IActionResult> CompleteTask(List<int> listIdTask)
         {
             var resService = await taskService.CompleteTasks(listIdTask);
-            if (resService == "01")
+            if (resService == "00")
             {
-                return NotFound(new { Mess = "Invalid ID" });
+                return Ok(new { Mess = "Successful" });
             }
-            return Ok(new { Mess = "Successful" });
+            return NotFound(new { Mess = "Invalid ID" });
+
         }
         [HttpPost("/Create-Task")]
         public async Task<IActionResult> CreateTask(TaskDTO taskDTO)

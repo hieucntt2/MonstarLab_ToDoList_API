@@ -7,7 +7,7 @@ using ToDoListAPI.Models;
 
 namespace ToDoListAPI.IService
 {
-    public interface IUserService
+    public interface IUserServices
     {
         Task<List<User>> GetAll();
         Task<string> CreateUser(User user);

@@ -13,8 +13,8 @@ namespace ToDoListAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private IUserService userService;
-        public UserController(IUserService userService)
+        private IUserServices userService;
+        public UserController(IUserServices userService)
         {
             this.userService = userService;
         }

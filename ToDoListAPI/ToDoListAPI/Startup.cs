@@ -1,4 +1,4 @@
-﻿    using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -35,6 +35,7 @@ namespace ToDoListAPI
         {
 
             services.AddControllers();
+            services.AddLogging();
             services.AddDbContext<MyDBContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("ToDoListDB"));
@@ -67,8 +68,8 @@ namespace ToDoListAPI
             });
 
             //Cấu hình Dependencty Inject IServer tương ứng với Service
-            services.AddTransient<ITaskService, TaskService>();
-            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<ITaskServices, TaskService>();
+            services.AddTransient<IUserServices, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,7 +79,7 @@ namespace ToDoListAPI
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-               
+
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "ToDoListAPI v1");

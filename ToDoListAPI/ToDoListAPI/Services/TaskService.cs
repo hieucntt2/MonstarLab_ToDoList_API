@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,17 +10,21 @@ using ToDoListAPI.Models;
 
 namespace ToDoListAPI.Services
 {
-    public class TaskService : ITaskService
+    public class TaskService : ITaskServices
     {
         private MyDBContext _context;
+        private readonly ILogger<TaskService> _logger;
 
-        public TaskService(MyDBContext context)
+        public TaskService(MyDBContext context, ILogger<TaskService> logger)
         {
             _context = context;
+            _logger = logger;
         }
+
         public async Task<List<TaskDTO>> GetAllTask(int userId)
         {
             //return await _context.Tasks.ToListAsync();
+            _logger.LogInformation("get all task");
             return await _context.Tasks
                 .Where(x => x.UserId == userId)
                 .Select(x => taskDTO(x))
@@ -35,34 +40,25 @@ namespace ToDoListAPI.Services
         }
         public async Task<string> CompleteTasks(List<int> listIdTask)
         {
-            //Duyệt listIDTask và lấy ra Task tương ứng
-            int failId = 0; //Đếm số lần ID ko thoả mãn
-                var Task = await _context.Tasks.Where(x => listIdTask.Contains(x.Id)).ToListAsync();
-
-            foreach (var idTask in listIdTask)
+            using var transaction = _context.Database.BeginTransaction();
+            try
             {
-
-
-                //Kiểm tra Id có hợp lệ
-                if (Task != null)
+                //Duyệt listIDTask và lấy ra Task tương ứng
+                var Task = await _context.Tasks.Where(x => listIdTask.Contains(x.Id) == true).ToListAsync();
+                foreach (var item in Task)
                 {
-                    Task.Status = true;
-                    _context.Update(Task);
-                    await _context.SaveChangesAsync();
+                    item.Status = true;
+                    _context.Update(item);
                 }
-                else
-                {
-                    failId++;
-                }
+                await _context.SaveChangesAsync();
+                transaction.Commit();
             }
-            if (failId == listIdTask.Count)
+            catch (Exception)
             {
-                return "01";
+                transaction.Rollback();
+                throw;
             }
-            else
-            {
-                return "00";
-            }
+            return "00";
 
         }
         public async Task<Models.Task> CreateTask(Models.Task task)
@@ -80,7 +76,7 @@ namespace ToDoListAPI.Services
                 _context.Tasks.Remove(task);
                 await _context.SaveChangesAsync();
             }
-           
+
             return null;
         }
         public async Task<string> UpdateTask(int Id, Models.Task task)

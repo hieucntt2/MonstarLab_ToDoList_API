@@ -18,6 +18,13 @@ namespace ToDoListAPI
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+             .ConfigureLogging((context,logging) =>
+             {
+                 logging.ClearProviders();
+                 logging.AddConsole();
+                 logging.AddConfiguration(context.Configuration.GetSection("Logging"));
+                 logging.AddDebug();
+             })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

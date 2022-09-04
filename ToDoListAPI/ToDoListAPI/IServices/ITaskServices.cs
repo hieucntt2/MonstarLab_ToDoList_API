@@ -6,7 +6,7 @@ using ToDoListAPI.Models;
 
 namespace ToDoListAPI.IService
 {
-    public interface ITaskService
+    public interface ITaskServices
     {
         Task<List<TaskDTO>> GetAllTask(int userId);
         Task<List<TaskDTO>> GetByStatus(bool status);

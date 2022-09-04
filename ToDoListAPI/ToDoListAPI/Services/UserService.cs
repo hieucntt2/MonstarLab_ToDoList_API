@@ -13,7 +13,7 @@ using ToDoListAPI.Models;
 
 namespace ToDoListAPI.Services
 {
-    public class UserService : IUserService
+    public class UserService : IUserServices
     {
         private MyDBContext _context;
         private IConfiguration _configuration;
@@ -58,7 +58,6 @@ namespace ToDoListAPI.Services
             else
             {
                 //GenerateToken token
-
                 res = GenerateToken(user);
             }
 
@@ -69,14 +68,12 @@ namespace ToDoListAPI.Services
         public string VerifyToken(string token)
         {
             IdentityModelEventSource.ShowPII = true;
-
             SecurityToken validatedToken;
             TokenValidationParameters validationParameters = new TokenValidationParameters();
 
             try
             {
                 validationParameters.ValidateLifetime = true;
-
                 validationParameters.ValidAudience = _configuration["Jwt:Issuer"].ToLower();
                 validationParameters.ValidIssuer = _configuration["Jwt:Issuer"].ToLower();
                 validationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -94,7 +91,7 @@ namespace ToDoListAPI.Services
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
-            //Chuẩn bị những thông tin user cần lưu vào claims
+            //Prepare the user information that needs to be saved in claims
             var claims = new List<Claim>() {
                 new Claim (JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                 new Claim (ClaimTypes.Name, user.UserName),
@@ -102,27 +99,26 @@ namespace ToDoListAPI.Services
                 new Claim ("UserId", user.UserId.ToString()),
             };
 
-            // Lấy time out từ cấu hình JWt ở application.json
+            //Get timeout from JWt configuration in application.json
             double timeout;
             if (!double.TryParse(_configuration["Jwt:Timeout"], out timeout))
             {
                 timeout = 30;
             }
 
-            //Tạo các key cần thiết từ cấu hình JWt ở application.json
+            //Generate required keys from JWt configuration in application.json
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Issuer = _configuration["Jwt:Issuer"],
                 Audience = _configuration["Jwt:Issuer"],
                 Subject = new ClaimsIdentity(claims),
-
                 Expires = DateTime.UtcNow.AddMinutes(timeout),
                 SigningCredentials = credentials
             };
-            //Tiến hành generate token
+
+            //Proceed to generate tokengt
             var token = tokenHandler.CreateToken(tokenDescriptor);
             string strToken = tokenHandler.WriteToken(token);
             return strToken;
