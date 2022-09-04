@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using ToDoListAPI.IService;
@@ -33,6 +34,7 @@ namespace ToDoListAPI.Services
         {
             //Kiem tra user name duy nhat
             var checkUserName = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
+            user.Password = GetMd5Hash(user.Password);
             //Khác null nghĩa là đã tồn tại
             if (checkUserName != null)
             {
@@ -50,6 +52,7 @@ namespace ToDoListAPI.Services
         public async Task<string> Login(string username, string pass)
         {
             var res = "";
+            pass = GetMd5Hash(pass);
             var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName == username && user.Password == pass);
             if (user == null)
             {
@@ -63,6 +66,7 @@ namespace ToDoListAPI.Services
 
             return res;
         }
+
 
         //Kiểm tra token hợp lệ
         public string VerifyToken(string token)
@@ -90,7 +94,6 @@ namespace ToDoListAPI.Services
         public string GenerateToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-
             //Prepare the user information that needs to be saved in claims
             var claims = new List<Claim>() {
                 new Claim (JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
@@ -105,7 +108,6 @@ namespace ToDoListAPI.Services
             {
                 timeout = 30;
             }
-
             //Generate required keys from JWt configuration in application.json
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -122,6 +124,19 @@ namespace ToDoListAPI.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
             string strToken = tokenHandler.WriteToken(token);
             return strToken;
+        }
+        public static string GetMd5Hash(string input)
+        {
+            string str_md5 = "";
+            byte[] mang = System.Text.Encoding.UTF8.GetBytes(input);
+            MD5CryptoServiceProvider my_md5 = new MD5CryptoServiceProvider();
+            mang = my_md5.ComputeHash(mang);
+
+            foreach (byte b in mang)
+            {
+                str_md5 += b.ToString("X2");
+            }
+            return str_md5;
         }
     }
 }
