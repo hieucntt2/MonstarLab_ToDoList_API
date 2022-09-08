@@ -28,7 +28,7 @@ namespace ToDoListAPI.Controllers
             if (verifyToken != null)
             {
                 var listUser = await userService.GetAll();
-                return Ok(new { Mess = "Success" });
+                return Ok(new { Mess = "Success" , listUser});
             }
             else
             {
@@ -38,7 +38,7 @@ namespace ToDoListAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser(UserDTO userDTO)
+        public async Task<IActionResult> CreateUser(UserRequest userDTO)
         {
             var user = new User();
             //Chuyen dto sang user

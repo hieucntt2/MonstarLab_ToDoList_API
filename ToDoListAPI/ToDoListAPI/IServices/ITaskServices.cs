@@ -8,9 +8,9 @@ namespace ToDoListAPI.IService
 {
     public interface ITaskServices
     {
-        Task<List<TaskDTO>> GetAllTask(int userId);
-        Task<List<TaskDTO>> GetByStatus(int userId, bool status);
-        Task<List<TaskDTO>> GetByDate(int userId, DateTime date);
+        Task<List<TaskRequest>> GetAllTask(int userId);
+        Task<List<TaskRequest>> GetByStatus(int userId, bool status);
+        Task<List<TaskRequest>> GetByDate(int userId, DateTime date);
         Task<string> CompleteTasks(int userId, List<int> listIdTask);
         Task<Models.Task> CreateTask(int userId, Models.Task task);
         Task<string> DeleteTask(int userId, int Id);

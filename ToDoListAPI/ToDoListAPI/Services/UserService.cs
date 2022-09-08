@@ -91,7 +91,7 @@ namespace ToDoListAPI.Services
                 new Claim (JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                 new Claim (ClaimTypes.Name, user.UserName),
                 new Claim (ClaimTypes.Email, user.Email),
-                new Claim ("UserId", user.UserId.ToString()),
+                new Claim (ClaimTypes.NameIdentifier, user.UserId.ToString()),
             };
 
             //Get timeout from JWt configuration in application.json

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ToDoListAPI.Models
 {
-    public class TaskDTO
+    public class TaskRequest
     {
         [Required]
         public string Name { get; set; }

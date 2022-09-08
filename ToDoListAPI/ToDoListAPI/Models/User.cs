@@ -17,14 +17,14 @@ namespace ToDoListAPI.Models
         public string Password { get; set; }
         public string Email { get; set; }
         public ICollection<Task> Tasks { get; set; }
-        public void ConvertFormUserDTO(UserDTO input)
+        public void ConvertFormUserDTO(UserRequest input)
         {
             this.FullName = input.FullName;
             this.UserName = input.UserName;
             this.Password = input.Password;
             this.Email = input.Email;
         }
-        internal void ConvertFormTaskDTO(TaskDTO taskDTO)
+        internal void ConvertFormTaskDTO(TaskRequest taskDTO)
         {
             throw new NotImplementedException();
         }

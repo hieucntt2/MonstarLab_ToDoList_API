@@ -22,7 +22,7 @@ namespace ToDoListAPI.Services
             _logger = logger;
         }
 
-        public async Task<List<TaskDTO>> GetAllTask(int userId)
+        public async Task<List<TaskRequest>> GetAllTask(int userId)
         {
             //return await _context.Tasks.ToListAsync();
             _logger.LogInformation("get all task");
@@ -31,11 +31,11 @@ namespace ToDoListAPI.Services
                 .Select(x => taskDTO(x))
                 .ToListAsync();
         }
-        public async Task<List<TaskDTO>> GetByStatus(int userId, bool status)
+        public async Task<List<TaskRequest>> GetByStatus(int userId, bool status)
         {
             return await _context.Tasks.Where(x => x.Status == status).Select(x => taskDTO(x)).ToListAsync();
         }
-        public async Task<List<TaskDTO>> GetByDate(int userId, DateTime date)
+        public async Task<List<TaskRequest>> GetByDate(int userId, DateTime date)
         {
             return await _context.Tasks.Where(x => x.CreateAt == date).Select(x => taskDTO(x)).ToListAsync();
         }
@@ -109,8 +109,8 @@ namespace ToDoListAPI.Services
         {
             return _context.Tasks.Any(e => e.Id == id);
         }
-        private static TaskDTO taskDTO(Models.Task task) =>
-           new TaskDTO
+        private static TaskRequest taskDTO(Models.Task task) =>
+           new TaskRequest
            {
                Name = task.Name,
                Description = task.Description,

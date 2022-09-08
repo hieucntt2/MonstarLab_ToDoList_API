@@ -26,7 +26,7 @@ namespace ToDoListAPI.Models
         [ForeignKey("CateId")]
         public TaskCategory Category { get; set; }
 
-        public void ConvertFormTaskDTO(TaskDTO task)
+        public void ConvertFormTaskDTO(TaskRequest task)
         {
             this.Name = task.Name;
             this.Description = task.Description;
