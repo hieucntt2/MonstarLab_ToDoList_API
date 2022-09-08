@@ -24,7 +24,7 @@ namespace ToDoListAPI.Controllers
             this.taskService = taskService;
         }
 
-        [HttpGet("/GetAllTask")]
+        [HttpGet]
         public async Task<IActionResult> GetAllTask(int userId)
         {
             var principal = HttpContext.User;
@@ -33,20 +33,20 @@ namespace ToDoListAPI.Controllers
             var listTask = await taskService.GetAllTask(userId);
             return Ok(listTask);
         }
-        [HttpGet("/Get-by-status")]
+        [HttpGet("{status}")]
         public async Task<IActionResult> GetByStatus(int userId, bool status)
         {
             var listTask = await taskService.GetByStatus(userId, status);
             return Ok(listTask);
         }
-        [HttpGet("/Get-by-date")]
+        [HttpGet("{date}")]
         public async Task<IActionResult> GetByDate(int userId, DateTime date)
         {
             var listTask = await taskService.GetByDate(userId, date);
             return Ok(listTask);
         }
 
-        [HttpPost("/Complete-Tasks")]
+        [HttpPost("Complete")]
         public async Task<IActionResult> CompleteTask(int userId, List<int> listIdTask)
         {
             var resService = await taskService.CompleteTasks(userId, listIdTask);
@@ -56,7 +56,7 @@ namespace ToDoListAPI.Controllers
             }
             return Ok(new { Mess = "Successful" });
         }
-        [HttpPost("/Create-Task")]
+        [HttpPost("Create")]
         public async Task<IActionResult> CreateTask(int userId, TaskDTO taskDTO)
         {
             var task = new Models.Task();
@@ -70,7 +70,7 @@ namespace ToDoListAPI.Controllers
             return NotFound(new { Mess = "Unsuccessful" });
         }
 
-        [HttpDelete("/Delete-Tasks")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTask(int userId, int id)
         {
             var resService = await taskService.DeleteTask(userId, id);
@@ -80,7 +80,7 @@ namespace ToDoListAPI.Controllers
             }
             return Ok(new { Mess = "Delete Success" });
         }
-        [HttpPut("/Update-Task")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTask(int userId, int id, Models.Task task)
         {
             var resService = await taskService.UpdateTask(userId, id, task);

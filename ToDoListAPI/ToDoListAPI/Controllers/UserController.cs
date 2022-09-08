@@ -37,7 +37,7 @@ namespace ToDoListAPI.Controllers
 
         }
 
-        [HttpPost("/Create-Account")]
+        [HttpPost]
         public async Task<IActionResult> CreateUser(UserDTO userDTO)
         {
             var user = new User();
@@ -55,7 +55,7 @@ namespace ToDoListAPI.Controllers
             }
         }
         [AllowAnonymous]
-        [HttpGet("/Login")]
+        [HttpGet("Login")]
         public async Task<IActionResult> Login(string username, string pass)
         {
             var resService = await userService.Login(username, pass);
