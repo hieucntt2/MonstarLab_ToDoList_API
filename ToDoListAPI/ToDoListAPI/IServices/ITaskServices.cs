@@ -9,11 +9,11 @@ namespace ToDoListAPI.IService
     public interface ITaskServices
     {
         Task<List<TaskDTO>> GetAllTask(int userId);
-        Task<List<TaskDTO>> GetByStatus(bool status);
-        Task<List<TaskDTO>> GetByDate(DateTime date);
-        Task<string> CompleteTasks(List<int> listIdTask);
-        Task<Models.Task> CreateTask(Models.Task task);
-        Task<string> DeleteTask(int Id);
-        Task<string> UpdateTask(int Id, Models.Task task);
+        Task<List<TaskDTO>> GetByStatus(int userId, bool status);
+        Task<List<TaskDTO>> GetByDate(int userId, DateTime date);
+        Task<string> CompleteTasks(int userId, List<int> listIdTask);
+        Task<Models.Task> CreateTask(int userId, Models.Task task);
+        Task<string> DeleteTask(int userId, int Id);
+        Task<Models.Task> UpdateTask(int userId, int Id, Models.Task task);
     }
 }

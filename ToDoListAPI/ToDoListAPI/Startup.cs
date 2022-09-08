@@ -66,7 +66,7 @@ namespace ToDoListAPI
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])),
                 };
             });
-
+            services.AddHttpContextAccessor();
             //Cấu hình Dependencty Inject IServer tương ứng với Service
             services.AddTransient<ITaskServices, TaskService>();
             services.AddTransient<IUserServices, UserService>();

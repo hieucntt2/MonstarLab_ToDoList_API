@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using ToDoListAPI.Models;
 
 namespace ToDoListAPI.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -18,21 +20,21 @@ namespace ToDoListAPI.Controllers
         {
             this.userService = userService;
         }
-        [HttpGet("/GetAllUser")]
+        [HttpGet]
         public async Task<IActionResult> GetAll(string token)
         {
             //Kiểm tra token 
             var verifyToken = userService.VerifyToken(token);
-            if(verifyToken == "00")
+            if (verifyToken != null)
             {
                 var listUser = await userService.GetAll();
-                return Ok(listUser);
+                return Ok(new { Mess = "Success" });
             }
             else
             {
                 return Unauthorized(new { Mess = "Chưa đăng nhập" });
             }
-            
+
         }
 
         [HttpPost("/Create-Account")]
@@ -43,7 +45,7 @@ namespace ToDoListAPI.Controllers
             user.ConvertFormUserDTO(userDTO);
             var resService = await userService.CreateUser(user);
 
-            if (resService == "01")
+            if (resService == null)
             {
                 return NotFound(new { Mess = "Tên đăng nhập đã tồn tại" });
             }
@@ -52,13 +54,13 @@ namespace ToDoListAPI.Controllers
                 return Ok(new { Mess = "Tạo thành công" });
             }
         }
-
+        [AllowAnonymous]
         [HttpGet("/Login")]
         public async Task<IActionResult> Login(string username, string pass)
         {
             var resService = await userService.Login(username, pass);
 
-            if (resService == "01")
+            if (resService == null)
             {
                 return NotFound(new { Mess = "Đăng nhập thất bại" });
             }

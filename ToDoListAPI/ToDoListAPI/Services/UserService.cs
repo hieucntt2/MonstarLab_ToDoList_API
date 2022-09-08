@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -30,23 +31,17 @@ namespace ToDoListAPI.Services
             return await _context.Users.ToListAsync();
         }
 
-        public async Task<string> CreateUser(User user)
+        public async Task<User> CreateUser(User user)
         {
-            //Kiem tra user name duy nhat
             var checkUserName = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
             user.Password = GetMd5Hash(user.Password);
-            //Khác null nghĩa là đã tồn tại
             if (checkUserName != null)
             {
-                return "01";
+                return null;
             }
-            //Chưa tồn tại thì thêm
-            else
-            {
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-                return "00";
-            }
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return user;
         }
 
         public async Task<string> Login(string username, string pass)
@@ -56,17 +51,15 @@ namespace ToDoListAPI.Services
             var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName == username && user.Password == pass);
             if (user == null)
             {
-                res = "01";
+                res = null;
             }
             else
             {
                 //GenerateToken token
                 res = GenerateToken(user);
             }
-
             return res;
         }
-
 
         //Kiểm tra token hợp lệ
         public string VerifyToken(string token)
@@ -81,13 +74,12 @@ namespace ToDoListAPI.Services
                 validationParameters.ValidAudience = _configuration["Jwt:Issuer"].ToLower();
                 validationParameters.ValidIssuer = _configuration["Jwt:Issuer"].ToLower();
                 validationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-
                 ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out validatedToken);
-                return "00";
+                return token;
             }
             catch
             {
-                return "01";
+                return null;
             }
         }
 

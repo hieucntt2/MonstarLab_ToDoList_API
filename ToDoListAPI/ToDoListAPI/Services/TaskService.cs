@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
@@ -30,15 +31,15 @@ namespace ToDoListAPI.Services
                 .Select(x => taskDTO(x))
                 .ToListAsync();
         }
-        public async Task<List<TaskDTO>> GetByStatus(bool status)
+        public async Task<List<TaskDTO>> GetByStatus(int userId, bool status)
         {
             return await _context.Tasks.Where(x => x.Status == status).Select(x => taskDTO(x)).ToListAsync();
         }
-        public async Task<List<TaskDTO>> GetByDate(DateTime date)
+        public async Task<List<TaskDTO>> GetByDate(int userId, DateTime date)
         {
             return await _context.Tasks.Where(x => x.CreateAt == date).Select(x => taskDTO(x)).ToListAsync();
         }
-        public async Task<string> CompleteTasks(List<int> listIdTask)
+        public async Task<string> CompleteTasks(int userId, List<int> listIdTask)
         {
             using var transaction = _context.Database.BeginTransaction();
             try
@@ -58,17 +59,17 @@ namespace ToDoListAPI.Services
                 transaction.Rollback();
                 throw;
             }
-            return "00";
+            return null;
 
         }
-        public async Task<Models.Task> CreateTask(Models.Task task)
+        public async Task<Models.Task> CreateTask(int userId, Models.Task task)
         {
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
 
             return task;
         }
-        public async Task<string> DeleteTask(int Id)
+        public async Task<string> DeleteTask(int userId, int Id)
         {
             var task = await _context.Tasks.FindAsync(Id);
             if (task != null)
@@ -79,11 +80,11 @@ namespace ToDoListAPI.Services
 
             return null;
         }
-        public async Task<string> UpdateTask(int Id, Models.Task task)
+        public async Task<Models.Task> UpdateTask(int userId, int Id, Models.Task task)
         {
             if (Id != task.Id)
             {
-                return "01";
+                return null;
             }
             _context.Entry(task).State = EntityState.Modified;
             try
@@ -94,7 +95,7 @@ namespace ToDoListAPI.Services
             {
                 if (!TaskExists(Id))
                 {
-                    return "01";
+                    return null;
                 }
                 else
                 {
@@ -102,7 +103,7 @@ namespace ToDoListAPI.Services
                 }
             }
 
-            return "00";
+            return task;
         }
         private bool TaskExists(int id)
         {
