@@ -13,10 +13,10 @@ namespace ToDoListAPI.Controllers
     //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private IUserServices userService;
-        public UserController(IUserServices userService)
+        public UsersController(IUserServices userService)
         {
             this.userService = userService;
         }
