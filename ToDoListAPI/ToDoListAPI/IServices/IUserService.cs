@@ -7,9 +7,8 @@ using ToDoListAPI.Models;
 
 namespace ToDoListAPI.IService
 {
-    public interface IUserServices
+    public interface IUserService
     {
-        Task<List<User>> GetAll();
         Task<User> CreateUser(User user);
         Task<string> Login(string username, string pass);
         string VerifyToken(string token);

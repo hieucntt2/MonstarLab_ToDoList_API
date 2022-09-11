@@ -15,7 +15,7 @@ using ToDoListAPI.Models;
 
 namespace ToDoListAPI.Services
 {
-    public class UserService : IUserServices
+    public class UserService : IUserService
     {
         private MyDBContext _context;
         private IConfiguration _configuration;
@@ -24,11 +24,6 @@ namespace ToDoListAPI.Services
         {
             _context = context;
             _configuration = configuration;
-        }
-
-        public async Task<List<User>> GetAll()
-        {
-            return await _context.Users.ToListAsync();
         }
 
         public async Task<User> CreateUser(User user)

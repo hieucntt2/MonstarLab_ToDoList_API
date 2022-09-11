@@ -15,26 +15,10 @@ namespace ToDoListAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private IUserServices userService;
-        public UsersController(IUserServices userService)
+        private IUserService userService;
+        public UsersController(IUserService userService)
         {
             this.userService = userService;
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetAll(string token)
-        {
-            //Kiểm tra token 
-            var verifyToken = userService.VerifyToken(token);
-            if (verifyToken != null)
-            {
-                var listUser = await userService.GetAll();
-                return Ok(new { Mess = "Success" , listUser});
-            }
-            else
-            {
-                return Unauthorized(new { Mess = "Chưa đăng nhập" });
-            }
-
         }
 
         [HttpPost]
@@ -47,28 +31,27 @@ namespace ToDoListAPI.Controllers
 
             if (resService == null)
             {
-                return NotFound(new { Mess = "Tên đăng nhập đã tồn tại" });
+                return NotFound(new { Mess = "Username available" });
             }
             else
             {
-                return Ok(new { Mess = "Tạo thành công" });
+                return Ok(new { Mess = "Successful" });
             }
         }
         [AllowAnonymous]
-        [HttpGet("Login")]
+        [HttpGet("login")]
         public async Task<IActionResult> Login(string username, string pass)
         {
             var resService = await userService.Login(username, pass);
 
             if (resService == null)
             {
-                return NotFound(new { Mess = "Đăng nhập thất bại" });
+                return NotFound(new { Mess = "Login failed" });
             }
             else
             {
                 return Ok(new { Token = resService });
             }
         }
-
     }
 }

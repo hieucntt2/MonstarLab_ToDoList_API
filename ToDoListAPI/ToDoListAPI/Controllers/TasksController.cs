@@ -16,55 +16,37 @@ namespace ToDoListAPI.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class TaskController : ControllerBase
+    public class TasksController : ControllerBase
     {
-        private ITaskServices taskService;
-        public TaskController(ITaskServices taskService)
+        private ITaskService taskService;
+        public TasksController(ITaskService taskService)
         {
             this.taskService = taskService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllTask()
+        [HttpGet("{status}")]
+        public async Task<IActionResult> GetTask(bool status, DateTime date)
         {
             var userId = int.Parse(HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault());
-            var listTask = await taskService.GetAllTask(userId);
-            return Ok(listTask);
-        }
-        [HttpGet("task/{status}")]
-        public async Task<IActionResult> GetByStatus(bool status)
-        {
-            var userId = int.Parse(HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault());
-            var listTask = await taskService.GetByStatus(userId, status);
-            return Ok(listTask);
-        }
-        [HttpGet("{date}")]
-        public async Task<IActionResult> GetByDate(DateTime date)
-        {
-            var userId = int.Parse(HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault());
-            var listTask = await taskService.GetByDate(userId, date);
+            var listTask = await taskService.GetTask(userId, status, date);
             return Ok(listTask);
         }
 
-        [HttpPost("Complete")]
+        [HttpPost("complete")]
         public async Task<IActionResult> CompleteTask(List<int> listIdTask)
         {
             var userId = int.Parse(HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault());
             var resService = await taskService.CompleteTasks(userId, listIdTask);
-            if (resService != null)
-            {
-                return NotFound(new { Mess = "Invalid ID" });
-            }
-            return Ok(new { Mess = "Successful" });
+            return Ok(new { Mess = "Successful", resService });
         }
-        [HttpPost("Create")]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateTask(TaskRequest taskDTO)
         {
             var userId = int.Parse(HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault());
             var task = new Models.Task();
             //Chuyen dto sang user
             task.ConvertFormTaskDTO(taskDTO);
-            var resService = await taskService.CreateTask(userId, task);
+            var resService = await taskService.CreateTask(userId, taskDTO);
             if (resService != null)
             {
                 return Ok(new { Mess = "Create Success", resService });
@@ -83,14 +65,14 @@ namespace ToDoListAPI.Controllers
             }
             return Ok(new { Mess = "Delete Success" });
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTask(int id, Models.Task task)
+        [HttpPut]
+        public async Task<IActionResult> UpdateTask(TaskRequest taskDTO)
         {
-            var userId = int.Parse(HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault());
-            var resService = await taskService.UpdateTask(userId, id, task);
+            var userId = Convert.ToInt32(HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault());
+            var resService = await taskService.UpdateTask(userId, taskDTO);
             if (resService == null)
             {
-                return NotFound(new { Mess = "Update success" });
+                return NotFound(new { Mess = "Update Unsuccessful" });
             }
             return Ok(new { Mess = "Successful" });
         }

@@ -13,9 +13,13 @@ namespace ToDoListAPI.Models
         [Key]
         public int UserId { get; set; }
         public string FullName { get; set; }
+        [MaxLength(100)]
         public string UserName { get; set; }
+        [MaxLength(100)]
         public string Password { get; set; }
+        [MaxLength(100)]
         public string Email { get; set; }
+        [Required]
         public ICollection<Task> Tasks { get; set; }
         public void ConvertFormUserDTO(UserRequest input)
         {
