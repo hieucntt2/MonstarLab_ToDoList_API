@@ -28,9 +28,9 @@ namespace ToDoListAPI.Services
 
         public async Task<User> CreateUser(User user)
         {
-            var checkUserName = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName && u.Email == user.Email);
-            user.Password = GetMd5Hash(user.Password);
-            if (checkUserName != null)
+            var checkUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName && u.Email == user.Email);
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            if (checkUser != null)
             {
                 return null;
             }
@@ -41,9 +41,10 @@ namespace ToDoListAPI.Services
 
         public async Task<string> Login(string username, string pass)
         {
-            pass = GetMd5Hash(pass);
-            var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName == username && user.Password == pass);
-            if (user == null)
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(pass);
+            var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName == username && user.Password == passwordHash);
+            bool verified = BCrypt.Net.BCrypt.Verify(user.Password, passwordHash);
+            if (user == null && verified == false)
             {
                 return null;
             }
@@ -83,19 +84,6 @@ namespace ToDoListAPI.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
             string strToken = tokenHandler.WriteToken(token);
             return strToken;
-        }
-        public static string GetMd5Hash(string input)
-        {
-            string str_md5 = "";
-            byte[] mang = System.Text.Encoding.UTF8.GetBytes(input);
-            MD5CryptoServiceProvider my_md5 = new MD5CryptoServiceProvider();
-            mang = my_md5.ComputeHash(mang);
-
-            foreach (byte b in mang)
-            {
-                str_md5 += b.ToString("X2");
-            }
-            return str_md5;
         }
     }
 }
