@@ -28,7 +28,7 @@ namespace ToDoListAPI.Services
 
         public async Task<User> CreateUser(User user)
         {
-            var checkUserName = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName);
+            var checkUserName = await _context.Users.FirstOrDefaultAsync(u => u.UserName == user.UserName && u.Email == user.Email);
             user.Password = GetMd5Hash(user.Password);
             if (checkUserName != null)
             {
@@ -41,41 +41,14 @@ namespace ToDoListAPI.Services
 
         public async Task<string> Login(string username, string pass)
         {
-            var res = "";
             pass = GetMd5Hash(pass);
             var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName == username && user.Password == pass);
             if (user == null)
             {
-                res = null;
-            }
-            else
-            {
-                //GenerateToken token
-                res = GenerateToken(user);
-            }
-            return res;
-        }
-
-        //Kiểm tra token hợp lệ
-        public string VerifyToken(string token)
-        {
-            IdentityModelEventSource.ShowPII = true;
-            SecurityToken validatedToken;
-            TokenValidationParameters validationParameters = new TokenValidationParameters();
-
-            try
-            {
-                validationParameters.ValidateLifetime = true;
-                validationParameters.ValidAudience = _configuration["Jwt:Issuer"].ToLower();
-                validationParameters.ValidIssuer = _configuration["Jwt:Issuer"].ToLower();
-                validationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-                ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out validatedToken);
-                return token;
-            }
-            catch
-            {
                 return null;
             }
+            //GenerateToken token
+            return GenerateToken(user);
         }
 
         public string GenerateToken(User user)
@@ -83,10 +56,9 @@ namespace ToDoListAPI.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             //Prepare the user information that needs to be saved in claims
             var claims = new List<Claim>() {
-                new Claim (JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+                new Claim (ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim (ClaimTypes.Name, user.UserName),
                 new Claim (ClaimTypes.Email, user.Email),
-                new Claim (ClaimTypes.NameIdentifier, user.UserId.ToString()),
             };
 
             //Get timeout from JWt configuration in application.json

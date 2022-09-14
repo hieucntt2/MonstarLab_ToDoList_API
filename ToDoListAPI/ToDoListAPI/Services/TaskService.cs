@@ -41,28 +41,24 @@ namespace ToDoListAPI.Services
         public async Task<string> CompleteTasks(int userId, List<int> listIdTask)
         {
             using var transaction = _context.Database.BeginTransaction();
-            try
+            var Task = await _context.Tasks.Where(x => x.UserId == userId && listIdTask.Contains(x.Id) == true).ToListAsync();
+            foreach (var item in Task)
             {
-                //Duyệt listIDTask và lấy ra Task tương ứng
-                var Task = await _context.Tasks.Where(x =>x.UserId == userId && listIdTask.Contains(x.Id) == true).ToListAsync();
-                foreach (var item in Task)
-                {
-                    item.Status = true;
-                    _context.Update(item);
-                }
-                await _context.SaveChangesAsync();
-                transaction.Commit();
+                item.Status = true;
+                _context.Update(item);
             }
-            catch (Exception)
-            {
-                transaction.Rollback();
-                throw;
-            }
+            await _context.SaveChangesAsync();
+            transaction.Commit();
             return null;
 
         }
         public async Task<TaskRequest> CreateTask(int userId, TaskRequest taskDTO)
         {
+            var cateId = await _context.TaskCategories.Where(x => taskDTO.CateId == x.CateId).FirstOrDefaultAsync();
+            if(cateId != null)
+            {
+                return null;
+            }
             Models.Task task = new Models.Task();
             task.CateId = taskDTO.CateId;
             task.UserId = userId;
@@ -71,12 +67,11 @@ namespace ToDoListAPI.Services
             task.ExecAt = taskDTO.ExecAt;
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
-
             return taskDTO;
         }
         public async Task<string> DeleteTask(int userId, int Id)
         {
-            var task = await _context.Tasks.FindAsync(Id);
+            var task = await _context.Tasks.Where(x => x.UserId == userId && x.Id == Id).FirstAsync();
             if (task != null)
             {
                 _context.Tasks.Remove(task);

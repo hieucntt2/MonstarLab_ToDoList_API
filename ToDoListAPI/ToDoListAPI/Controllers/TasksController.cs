@@ -19,9 +19,11 @@ namespace ToDoListAPI.Controllers
     public class TasksController : ControllerBase
     {
         private ITaskService taskService;
-        public TasksController(ITaskService taskService)
+        private IMapper _mapper;
+        public TasksController(ITaskService taskService,IMapper mapper)
         {
             this.taskService = taskService;
+            _mapper = mapper;
         }
 
         [HttpGet("{status}")]
@@ -44,14 +46,14 @@ namespace ToDoListAPI.Controllers
         {
             var userId = int.Parse(HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault());
             var task = new Models.Task();
-            //Chuyen dto sang user
-            task.ConvertFormTaskDTO(taskDTO);
+            //Create a map
+            task = _mapper.Map<Models.Task>(taskDTO);
             var resService = await taskService.CreateTask(userId, taskDTO);
-            if (resService != null)
+            if (resService == null)
             {
-                return Ok(new { Mess = "Create Success", resService });
+                return NotFound(new { Mess = "Unsuccessful" });
             }
-            return NotFound(new { Mess = "Unsuccessful" });
+            return Ok(new { Mess = "Create Success", resService });
         }
 
         [HttpDelete("{id}")]

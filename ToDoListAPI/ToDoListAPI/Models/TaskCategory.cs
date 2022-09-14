@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 
 namespace ToDoListAPI.Models
 {
-    [Table("TaskCategory")]
+    [Table("TaskCategories")]
     public class TaskCategory
     {
         [Key]
         public int CateId { get; set; }
-        public string  CateName { get; set; }
+        [Required]
+        [MaxLength(100)]
+        public string CateName { get; set; }
+        [Required]
         public ICollection<Task> Tasks { get; set; }
     }
 }

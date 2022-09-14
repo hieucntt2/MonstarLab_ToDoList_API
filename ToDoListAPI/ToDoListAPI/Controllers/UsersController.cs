@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -16,17 +17,19 @@ namespace ToDoListAPI.Controllers
     public class UsersController : ControllerBase
     {
         private IUserService userService;
-        public UsersController(IUserService userService)
+        private IMapper _mapper;
+        public UsersController(IUserService userService, IMapper mapper)
         {
             this.userService = userService;
+            _mapper = mapper;
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateUser(UserRequest userDTO)
         {
             var user = new User();
-            //Chuyen dto sang user
-            user.ConvertFormUserDTO(userDTO);
+            //Create a map
+            user = _mapper.Map<User>(userDTO);
             var resService = await userService.CreateUser(user);
 
             if (resService == null)

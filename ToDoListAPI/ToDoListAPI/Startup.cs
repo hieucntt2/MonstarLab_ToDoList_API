@@ -70,6 +70,7 @@ namespace ToDoListAPI
             //Cấu hình Dependencty Inject IServer tương ứng với Service
             services.AddTransient<ITaskService, TaskService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddAutoMapper(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

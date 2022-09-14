@@ -70,7 +70,7 @@ namespace ToDoListAPI.Migrations
 
                     b.HasKey("CateId");
 
-                    b.ToTable("TaskCategory");
+                    b.ToTable("TaskCategories");
                 });
 
             modelBuilder.Entity("ToDoListAPI.Models.User", b =>
@@ -81,16 +81,19 @@ namespace ToDoListAPI.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Password")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("UserId");
 
