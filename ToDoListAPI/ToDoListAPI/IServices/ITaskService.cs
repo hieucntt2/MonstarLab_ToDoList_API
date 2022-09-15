@@ -8,10 +8,10 @@ namespace ToDoListAPI.IService
 {
     public interface ITaskService
     {
-        Task<List<TaskRequest>> GetTask(int userId, bool status, DateTime date);
+        Task<List<Models.Task>> GetTasks(int userId, bool status, DateTime date);
         Task<string> CompleteTasks(int userId, List<int> listIdTask);
-        Task<TaskRequest> CreateTask(int userId, TaskRequest taskDTO);
+        Task<Models.Task> CreateTask(int userId, TaskRespon taskDTO);
         Task<string> DeleteTask(int userId, int Id);
-        Task<TaskRequest> UpdateTask(int userId, TaskRequest taskDTO);
+        Task<Models.Task> UpdateTask(int userId, TaskRespon taskDTO);
     }
 }

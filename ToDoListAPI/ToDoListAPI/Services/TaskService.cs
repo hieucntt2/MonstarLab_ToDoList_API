@@ -22,20 +22,19 @@ namespace ToDoListAPI.Services
             _logger = logger;
         }
 
-        public async Task<List<TaskRequest>> GetTask(int userId, bool status, DateTime date)
+        public async Task<List<Models.Task>> GetTasks(int userId, bool status, DateTime date)
         {
             //return await _context.Tasks.ToListAsync();
             _logger.LogInformation("get all task");
             if (status != null && date == null)
             {
-                return await _context.Tasks.Where(x => x.UserId == userId && x.Status == status).Select(x => taskDTO(x)).ToListAsync();
+                return await _context.Tasks.Where(x => x.UserId == userId && x.Status == status).ToListAsync();
             }
             if (status == null && date != null)
             {
-                return await _context.Tasks.Where(x => x.UserId == userId && x.CreateAt == date).Select(x => taskDTO(x)).ToListAsync();
+                return await _context.Tasks.Where(x => x.UserId == userId && x.CreateAt == date).ToListAsync();
             }
-            return await _context.Tasks.Where(x => x.UserId == userId && x.CreateAt == date && x.Status == status).Select(x => taskDTO(x)).ToListAsync();
-
+            return await _context.Tasks.Where(x => x.UserId == userId && x.CreateAt == date && x.Status == status).ToListAsync();
         }
 
         public async Task<string> CompleteTasks(int userId, List<int> listIdTask)
@@ -52,10 +51,10 @@ namespace ToDoListAPI.Services
             return null;
 
         }
-        public async Task<TaskRequest> CreateTask(int userId, TaskRequest taskDTO)
+        public async Task<Models.Task> CreateTask(int userId, TaskRespon taskDTO)
         {
             var cateId = await _context.TaskCategories.Where(x => taskDTO.CateId == x.CateId).FirstOrDefaultAsync();
-            if(cateId != null)
+            if (cateId != null)
             {
                 return null;
             }
@@ -67,7 +66,7 @@ namespace ToDoListAPI.Services
             task.ExecAt = taskDTO.ExecAt;
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
-            return taskDTO;
+            return task;
         }
         public async Task<string> DeleteTask(int userId, int Id)
         {
@@ -80,36 +79,18 @@ namespace ToDoListAPI.Services
 
             return null;
         }
-        public async Task<TaskRequest> UpdateTask(int userId, TaskRequest taskDTO)
+        public async Task<Models.Task> UpdateTask(int userId, TaskRespon taskDTO)
         {
             using var transaction = _context.Database.BeginTransaction();
-            try
-            {
-                var task = _context.Tasks.FirstOrDefault(c => c.Id == taskDTO.Id);
-                task.CateId = taskDTO.CateId;
-                task.UserId = userId;
-                task.Name = taskDTO.Name;
-                task.Description = taskDTO.Description;
-                task.ExecAt = taskDTO.ExecAt;
-                _context.Tasks.Update(task);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception)
-            {
-                transaction.Rollback();
-                throw;
-            }
-            return taskDTO;
+            var task = _context.Tasks.FirstOrDefault(c => c.Id == taskDTO.Id);
+            task.CateId = taskDTO.CateId;
+            task.UserId = userId;
+            task.Name = taskDTO.Name;
+            task.Description = taskDTO.Description;
+            task.ExecAt = taskDTO.ExecAt;
+            _context.Tasks.Update(task);
+            await _context.SaveChangesAsync();
+            return task;
         }
-
-        private static TaskRequest taskDTO(Models.Task task) =>
-           new TaskRequest
-           {
-               Id = task.Id,
-               Name = task.Name,
-               Description = task.Description,
-               ExecAt = task.ExecAt,
-               CateId = task.CateId
-           };
     }
 }

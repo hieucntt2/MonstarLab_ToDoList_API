@@ -20,17 +20,17 @@ namespace ToDoListAPI.Controllers
     {
         private ITaskService taskService;
         private IMapper _mapper;
-        public TasksController(ITaskService taskService,IMapper mapper)
+        public TasksController(ITaskService taskService, IMapper mapper)
         {
             this.taskService = taskService;
             _mapper = mapper;
         }
 
-        [HttpGet("{status}")]
-        public async Task<IActionResult> GetTask(bool status, DateTime date)
+        [HttpGet]
+        public async Task<IActionResult> GetTasks(bool status, DateTime date)
         {
             var userId = int.Parse(HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault());
-            var listTask = await taskService.GetTask(userId, status, date);
+            var listTask = await taskService.GetTasks(userId, status, date);
             return Ok(listTask);
         }
 
@@ -42,12 +42,9 @@ namespace ToDoListAPI.Controllers
             return Ok(new { Mess = "Successful", resService });
         }
         [HttpPost("create")]
-        public async Task<IActionResult> CreateTask(TaskRequest taskDTO)
+        public async Task<IActionResult> CreateTask(TaskRespon taskDTO)
         {
             var userId = int.Parse(HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault());
-            var task = new Models.Task();
-            //Create a map
-            task = _mapper.Map<Models.Task>(taskDTO);
             var resService = await taskService.CreateTask(userId, taskDTO);
             if (resService == null)
             {
@@ -68,7 +65,7 @@ namespace ToDoListAPI.Controllers
             return Ok(new { Mess = "Delete Success" });
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateTask(TaskRequest taskDTO)
+        public async Task<IActionResult> UpdateTask(TaskRespon taskDTO)
         {
             var userId = Convert.ToInt32(HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault());
             var resService = await taskService.UpdateTask(userId, taskDTO);

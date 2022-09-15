@@ -10,6 +10,7 @@ namespace ToDoListAPI.Models
     [Table("User")]
     public class User
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int UserId { get; set; }
         public string FullName { get; set; }
@@ -19,7 +20,6 @@ namespace ToDoListAPI.Models
         public string Password { get; set; }
         [MaxLength(100)]
         public string Email { get; set; }
-        [Required]
         public ICollection<Task> Tasks { get; set; }
     }
 }

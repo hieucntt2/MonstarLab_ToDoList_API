@@ -11,7 +11,7 @@ namespace ToDoListAPI.Helpers
     {
         public AppMapper()
         {
-            CreateMap<TaskRequest, Models.Task>();
+            CreateMap<TaskRespon, Models.Task>();
             CreateMap<UserRequest, User>();
         }
     }

@@ -15,7 +15,6 @@ namespace ToDoListAPI.Models
         [Required]
         [MaxLength(100)]
         public string CateName { get; set; }
-        [Required]
         public ICollection<Task> Tasks { get; set; }
     }
 }

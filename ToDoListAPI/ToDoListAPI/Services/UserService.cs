@@ -41,10 +41,9 @@ namespace ToDoListAPI.Services
 
         public async Task<string> Login(string username, string pass)
         {
-            string passwordHash = BCrypt.Net.BCrypt.HashPassword(pass);
-            var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName == username && user.Password == passwordHash);
-            bool verified = BCrypt.Net.BCrypt.Verify(user.Password, passwordHash);
-            if (user == null && verified == false)
+            var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName == username);
+            bool verifile = BCrypt.Net.BCrypt.Verify(user.Password, pass);
+            if (user == null || verifile == false)
             {
                 return null;
             }

@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace ToDoListAPI.Models
 {
-    public class TaskRequest
+    public class TaskRespon
     {
         [Required]
         public int Id { get; set; }
         [Required]
+        [MaxLength(100)]
         public string Name { get; set; }
-        [StringLength(1000)]
+        [MaxLength(1000)]
         public string Description { get; set; }
         public DateTime ExecAt { get; set; }
         [Required]
