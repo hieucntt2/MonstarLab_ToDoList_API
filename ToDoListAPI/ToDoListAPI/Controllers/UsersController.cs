@@ -27,9 +27,8 @@ namespace ToDoListAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser(UserRequest userDTO)
         {
-            var user = new User();
             //Create a map
-            user = _mapper.Map<User>(userDTO);
+            var user = _mapper.Map<User>(userDTO);
             var resService = await userService.CreateUser(user);
 
             if (resService == null)
