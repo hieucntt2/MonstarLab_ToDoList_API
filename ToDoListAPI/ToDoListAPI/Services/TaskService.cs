@@ -82,7 +82,7 @@ namespace ToDoListAPI.Services
         public async Task<Models.Task> UpdateTask(int userId, TaskRespon taskDTO)
         {
             using var transaction = _context.Database.BeginTransaction();
-            var task = _context.Tasks.FirstOrDefault(c => c.Id == taskDTO.Id);
+            var task = _context.Tasks.FirstOrDefault(c =>c.UserId==userId && c.Id == taskDTO.Id);
             task.CateId = taskDTO.CateId;
             task.UserId = userId;
             task.Name = taskDTO.Name;

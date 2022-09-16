@@ -35,10 +35,7 @@ namespace ToDoListAPI.Controllers
             {
                 return NotFound(new { Mess = "Username available" });
             }
-            else
-            {
-                return Ok(new { Mess = "Successful" });
-            }
+            return Ok(new { Mess = "Successful" });
         }
         [AllowAnonymous]
         [HttpGet("login")]
@@ -50,10 +47,7 @@ namespace ToDoListAPI.Controllers
             {
                 return NotFound(new { Mess = "Login failed" });
             }
-            else
-            {
-                return Ok(new { Token = resService });
-            }
+            return Ok(new { Token = resService });
         }
     }
 }
