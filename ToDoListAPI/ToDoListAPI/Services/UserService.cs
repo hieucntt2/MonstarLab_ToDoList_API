@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -19,11 +20,14 @@ namespace ToDoListAPI.Services
     {
         private MyDBContext _context;
         private IConfiguration _configuration;
+        private readonly ILogger<UserService> _logger;
 
-        public UserService(MyDBContext context, IConfiguration configuration)
+
+        public UserService(MyDBContext context, IConfiguration configuration, ILogger<UserService> logger)
         {
             _context = context;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<User> CreateUser(User user)
@@ -32,10 +36,12 @@ namespace ToDoListAPI.Services
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
             if (checkUser != null)
             {
+                _logger.LogError("Create Failed");
                 return null;
             }
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+            _logger.LogInformation("Create Success");
             return user;
         }
 
@@ -45,9 +51,11 @@ namespace ToDoListAPI.Services
             bool verifile = BCrypt.Net.BCrypt.Verify(user.Password, pass);
             if (user == null || verifile == false)
             {
+                _logger.LogError("Login Failed");
                 return null;
             }
             //GenerateToken token
+            _logger.LogInformation("Login success");
             return GenerateToken(user);
         }
 
